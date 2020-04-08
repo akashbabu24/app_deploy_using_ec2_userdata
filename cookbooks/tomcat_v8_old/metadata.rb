@@ -3,7 +3,7 @@ maintainer 'The Authors'
 maintainer_email 'you@example.com'
 license 'All Rights Reserved'
 description 'Installs/Configures tomcat_v8'
-version '0.4.0'
+version '0.2.0'
 chef_version '>= 14.0'
 
 depends 'java_se', '8.131.0' 

@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#TOMCAT parameters
 default['tomcat']['tomcat_folder']='/opt/apache/apache-tomcat/'
 default['tomcat']['deployment_path']="#{node['tomcat']['tomcat_folder']}/webapps/"
 
@@ -24,9 +25,20 @@ default['tomcat']['tomcat_install_dir']="/opt/apache"
 default['tomcat']['tomcat_user']="tomcat"
 default['tomcat']['tomcat_auto_start']="true"
 
-default['app']['artifact_url']="https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
-default['app']['name']='sample.war'
-
 default['tomcat']['tomcat_group'] = 'tomcat'
 default['tomcat']['tomcat_manage_dir'] = "#{node['tomcat']['tomcat_folder']}/webapps/manager/META-INF"
 default['tomcat']['tomcat_conf_dir'] = "#{node['tomcat']['tomcat_folder']}/conf"
+
+
+#APP parameters
+#default['app']['artifact_url']="https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+#default['app']['name']='sample.war'
+
+default['app']['nexus_url']="http://52.167.8.180:8081"
+default['app']['repository_name']="Barclays-POC"
+default['app']['app_groupd_id']="activemq"
+default['app']['app_artifact_id']="activemq"
+default['app']['app_version']="3.1"
+default['app']['app_extension']="jar"
+
+

@@ -1,0 +1,63 @@
+{
+  "revision_id": "12a3dcc991f0ab6424ada4c807a7c69e6bd10849474213826a0d430d5b7d13f4",
+  "name": "activemq",
+  "run_list": [
+    "recipe[activemq::default]"
+  ],
+  "included_policy_locks": [
+
+  ],
+  "cookbook_locks": {
+    "activemq": {
+      "version": "0.1.12",
+      "identifier": "9198fbe8fdfbd911eb5da640b2871170553bb29f",
+      "dotted_decimal_identifier": "40982079336217561.5043862057824903.19174163985055",
+      "source": ".",
+      "cache_key": null,
+      "scm_info": null,
+      "source_options": {
+        "path": "."
+      }
+    },
+    "java_se": {
+      "version": "8.131.0",
+      "identifier": "7284374857bf0f8dbe1aaa1ec5c3c67c0b3a4ed6",
+      "dotted_decimal_identifier": "32233520316792591.39896993448773059.218236066614998",
+      "cache_key": "java_se-8.131.0-supermarket.chef.io",
+      "origin": "https://supermarket.chef.io:443/api/v1/cookbooks/java_se/versions/8.131.0/download",
+      "source_options": {
+        "artifactserver": "https://supermarket.chef.io:443/api/v1/cookbooks/java_se/versions/8.131.0/download",
+        "version": "8.131.0"
+      }
+    }
+  },
+  "default_attributes": {
+
+  },
+  "override_attributes": {
+
+  },
+  "solution_dependencies": {
+    "Policyfile": [
+      [
+        "activemq",
+        ">= 0.0.0"
+      ],
+      [
+        "java_se",
+        "= 8.131.0"
+      ]
+    ],
+    "dependencies": {
+      "activemq (0.1.12)": [
+        [
+          "java_se",
+          "= 8.131.0"
+        ]
+      ],
+      "java_se (8.131.0)": [
+
+      ]
+    }
+  }
+}

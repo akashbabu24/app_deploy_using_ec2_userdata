@@ -15,18 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['tomcat']['tomcat_folder']='/opt/apache/apache-tomcat/'
-default['tomcat']['deployment_path']="#{node['tomcat']['tomcat_folder']}/webapps/"
-
-default['tomcat']['tomcat_url']="http://archive.apache.org/dist/tomcat/tomcat-8/"
-default['tomcat']['tomcat_version']="8.5.15"
-default['tomcat']['tomcat_install_dir']="/opt/apache"
-default['tomcat']['tomcat_user']="tomcat"
-default['tomcat']['tomcat_auto_start']="true"
+default['tomcat_v8']['tomcat_url']="http://archive.apache.org/dist/tomcat/tomcat-8/"
+default['tomcat_v8']['tomcat_version']="8.5.15"
+default['tomcat_v8']['tomcat_install_dir']="/opt/apache"
+default['tomcat_v8']['tomcat_user']="tomcat"
+default['tomcat_v8']['tomcat_auto_start']="true"
 
 default['app']['artifact_url']="https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+default['tomcat']['deployment_path']='/opt/apache/apache-tomcat/webapps/'
 default['app']['name']='sample.war'
-
-default['tomcat']['tomcat_group'] = 'tomcat'
-default['tomcat']['tomcat_manage_dir'] = "#{node['tomcat']['tomcat_folder']}/webapps/manager/META-INF"
-default['tomcat']['tomcat_conf_dir'] = "#{node['tomcat']['tomcat_folder']}/conf"

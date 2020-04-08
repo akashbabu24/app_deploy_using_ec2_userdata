@@ -1,0 +1,35 @@
+{
+  "name": "activemq",
+  "description": "Installs/Configures az_java",
+  "long_description": "Installs/Configures az_java",
+  "maintainer": "activemq",
+  "maintainer_email": "",
+  "license": "All Rights Reserved",
+  "platforms": {
+
+  },
+  "dependencies": {
+    "java_se": "= 8.131.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.1.12",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 14.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}
