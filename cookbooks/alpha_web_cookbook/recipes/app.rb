@@ -16,8 +16,8 @@ bash 'tomcat deployment' do
 	mkdir #{node['tomcat']['deployment_path']}/angular
 	curl ${alphawebartifacturl} -o /tmp/#{app_name}
         cd /tmp
-        tar -xvf #{app_name}
-	mv dist #{node['tomcat']['deployment_path']}/angular/
+        tar -xf #{app_name}
+	mv dist/FormSubmit/* #{node['tomcat']['deployment_path']}/angular/
   EOH
 end
 
