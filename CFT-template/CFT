@@ -1,0 +1,1049 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation EC2_Instance",
+    "Parameters": {
+        "ImageId": {
+            "Description": "The Amazon Linux2 AMI to use for the instance",
+            "Type": "String",
+            "Default": "ami-0520e698dd500b1d1"
+        },
+        "InstanceType": {
+            "Description": "WebServer EC2 instance type",
+            "Type": "String",
+            "Default": "t2.small"
+        },
+        "KeyName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Default": "key-name"
+        },
+        "ProjectTag": {
+            "Description": "Project name",
+            "Type": "String",
+            "Default": "project-name"
+        },
+        "VpcId": {
+            "Type": "AWS::EC2::VPC::Id",
+            "Description": "VpcId of your existing Virtual Private Cloud (VPC)",
+            "Default": ""
+        },
+        "VpcCidr": {
+            "Description": "The IP address range that can be used to SSH to the EC2 instances",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "Default": "0.0.0.0/0",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "WebSubnet": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID of your existing Virtual Private Cloud (VPC)",
+            "Default": ""
+        },
+        "ServiceSubnet1": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID of your existing Virtual Private Cloud (VPC)",
+            "Default": ""
+        },
+		"ServiceSubnet2": {
+            "Type": "AWS::EC2::Subnet::Id",
+            "Description": "SubnetID of your existing Virtual Private Cloud (VPC)",
+            "Default": ""
+        },
+        "S3BucketUri": {
+            "Type": "String",
+			"Description": "S3 bucket URi where chef server's starter kit is placed",
+            "Default": ""
+        },
+        "ChefValidationKitFile": {
+            "Type": "String",
+            "Default": "starter-kit.zip"
+        },
+		"MQServerPrivateIP":{
+            "Type": "String",
+			"Description": "For experimental purpose, have kept MQ server prvate IP as static. Please provide an IP",
+            "Default": ""
+        },
+		"DemoWebArtifactUrl": {
+            "Type": "String",
+			"Description": "Nexus/other repo path for Angular tar.gz. The default URL does not work",
+            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.tar.gz"
+        },
+		"DemoWebArtifactFileName": {
+            "Type": "String",
+			"Description": "Name of the file to be downloaded from Nexus",
+            "Default": "sample.tar.gz"
+        },
+		"DemoServiceVM1ArtifactUrl": {
+            "Type": "String",
+			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
+            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+        },
+		"DemoServiceVM1ArtifactFileName": {
+            "Type": "String",
+			"Description": "Name of the file to be downloaded from Nexus",
+            "Default": "sample.war"
+        },
+		"DemoServiceVM2ArtifactUrl1": {
+            "Type": "String",
+			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
+            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+        },
+		"DemoServiceVM2ArtifactFileName1": {
+            "Type": "String",
+            "Description": "Name of the file to be downloaded from Nexus",
+            "Default": "sample.war"
+        },
+		"DemoServiceVM2ArtifactUrl2": {
+            "Type": "String",
+			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
+            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+        },
+		"DemoServiceVM2ArtifactFileName2": {
+            "Type": "String",
+			"Description": "Name of the file to be downloaded from Nexus",
+            "Default": "BarcaSave.war"
+        },
+		"DemoServiceVM3ArtifactUrl1": {
+            "Type": "String",
+			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
+            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+        },
+		"DemoServiceVM3ArtifactFileName1": {
+            "Type": "String",
+			"Description": "Name of the file to be downloaded from Nexus",
+            "Default": "sample.war"
+        },
+		"DemoServiceVM3ArtifactUrl2": {
+            "Type": "String",
+			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
+            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
+        },
+		"DemoServiceVM3ArtifactFileName2": {
+            "Type": "String",
+			"Description": "Name of the file to be downloaded from Nexus",
+            "Default": "sample.war"
+        },
+		"DemoWebCookbook": {
+            "Type": "String",
+            "Default": "web_cookbook"
+        },
+		"DemoServiceCookbookVM1": {
+            "Type": "String",
+            "Default": "service_cookbook_VM1"
+        },
+		"DemoServiceCookbookVM2and3": {
+            "Type": "String",
+            "Default": "service_cookbook_VM2and3"
+        },
+		"DemoMQCookbook": {
+            "Type": "String",
+            "Default": "activemq_cookbook"
+        },
+		"WebInstancePort": {
+            "Type": "Number",
+            "Default": "8080"
+        },
+		"WebLBPort": {
+            "Type": "Number",
+            "Default": "80"
+        },
+		"ServiceLBPort": {
+            "Type": "Number",
+            "Default": "80"
+        },
+		"ServiceLBTG1Port": {
+            "Type": "Number",
+            "Default": "80"
+        },
+		"ServiceLBTG2Port": {
+            "Type": "Number",
+            "Default": "80"
+        },
+		"ServiceLBTG3Port": {
+            "Type": "Number",
+            "Default": "80"
+        },
+		"ServiceLBPathPattern1": {
+            "Type": "CommaDelimitedList",
+			"Description": "path-patterns for ALB. Below defaults are given for indicative purposes and does not mean to work",
+            "Default": "/sample/*,/sampleService/*"
+        },
+		"ServiceLBPathPattern2": {
+            "Type": "CommaDelimitedList",
+			"Description": "path-patterns for ALB. Below defaults are given for indicative purposes and does not mean to work",
+            "Default": "/sampleSlave/*,/sampleDelete/*"
+        },
+		"ServiceLBPathPattern3": {
+            "Type": "CommaDelimitedList",
+			"Description": "path-patterns for ALB. Below defaults are given for indicative purposes and does not mean to work",
+            "Default": "/sampleGet/*"
+        },
+		"OnPremServiceCIDR": {
+			"Type": "String",
+			"Description": "On-prem IP CIDR (part of VPN network) to be allowed by service layer Load Balancer, in case application needs it",
+            "Default": "127.0.0.1/24"
+		}
+    },
+    "Resources": {
+        "DemowebVM1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "UserData": {
+                    "Fn::Base64": {
+						"Fn::Join": ["", [
+							"#!/bin/bash\n",
+							"sudo su ec2-user\n",
+							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
+							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
+							"mkdir -p /home/ec2-user/.chef\n",
+							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
+							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
+							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
+							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
+							"knife cookbook download ", { "Ref": "DemoWebCookbook" }, " latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
+							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "\n",
+							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
+							"sudo su root  \n",
+							"export DemoWebartifacturl=", { "Ref": "DemoWebArtifactUrl" }, " \n",
+							"sed -i 's/artifactFileName/", { "Ref": "DemoWebArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "/attributes/default.rb \n",
+							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoWebCookbook" }, " --chef-license accept\n"
+						]]
+                    }
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "Ec2IamProfileEC2"
+                },
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+				"NetworkInterfaces": [
+                    {
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "AssociatePublicIpAddress": true,
+                        "GroupSet": [
+                            {
+                                "Ref": "SecurityGroupEC2"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "WebSubnet"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "DemowebVM1"
+                    }
+                ]
+            }
+        },
+        "DemowebVM2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "UserData": {
+                    "Fn::Base64": {
+						"Fn::Join": ["", [
+							"#!/bin/bash\n",
+							"sudo su ec2-user\n",
+							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
+							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
+							"mkdir -p /home/ec2-user/.chef\n",
+							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
+							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
+							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
+							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
+							"knife cookbook download ", { "Ref": "DemoWebCookbook" }, " latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
+							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "\n",
+							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
+							"sudo su root \n",
+							"export DemoWebartifacturl=", { "Ref": "DemoWebArtifactUrl" }, " \n",
+							"sed -i 's/artifactFileName/", { "Ref": "DemoWebArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "/attributes/default.rb \n",
+							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoWebCookbook" }, " --chef-license accept\n"
+						]]
+                    }
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "Ec2IamProfileEC2"
+                },
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+				"NetworkInterfaces": [
+                    {
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "AssociatePublicIpAddress": true,
+                        "GroupSet": [
+                            {
+                                "Ref": "SecurityGroupEC2"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "WebSubnet"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "DemowebVM2"
+                    }
+                ]
+            }
+        },
+        "DemoserviceVM1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "UserData": {
+                    "Fn::Base64": {
+						"Fn::Join": ["", [
+							"#!/bin/bash\n",
+							"sudo su ec2-user\n",
+							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
+							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
+							"mkdir -p /home/ec2-user/.chef\n",
+							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
+							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
+							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
+							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
+							"knife cookbook download ", { "Ref": "DemoServiceCookbookVM1" }, " latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
+							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM1" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM1" }, "\n",
+							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
+							"sudo su root \n",
+							"export DemoServiceartifacturl=", { "Ref": "DemoServiceVM1ArtifactUrl" }, " \n",
+							"sed -i 's/artifact_file_name/", { "Ref": "DemoServiceVM1ArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM1" }, "/attributes/default.rb \n",
+							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbookVM1" }, " --chef-license accept\n"							
+						]]
+                    }
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "Ec2IamProfileEC2"
+                },
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+				"NetworkInterfaces": [
+                    {
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "AssociatePublicIpAddress": true,
+                        "GroupSet": [
+                            {
+                                "Ref": "SecurityGroupEC2"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "ServiceSubnet1"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "DemoserviceVM1"
+                    }
+                ]
+            }
+        },
+        "DemoserviceVM2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "UserData": {
+                    "Fn::Base64": {
+						"Fn::Join": ["", [
+							"#!/bin/bash\n",
+							"sudo su ec2-user\n",
+							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
+							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
+							"mkdir -p /home/ec2-user/.chef\n",
+							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
+							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
+							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
+							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
+							"knife cookbook download ", { "Ref": "DemoServiceCookbookVM2and3" }, " latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
+							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "\n",
+							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
+							"sudo su root \n",
+							"export DemoServiceartifacturl1=", { "Ref": "DemoServiceVM2ArtifactUrl1" }, " \n",
+							"export DemoServiceartifactfilename1=", { "Ref": "DemoServiceVM2ArtifactFileName1" }, " \n",
+							"export DemoServiceartifacturl2=", { "Ref": "DemoServiceVM2ArtifactUrl2" }, " \n",
+							"export DemoServiceartifactfilename2=", { "Ref": "DemoServiceVM2ArtifactFileName2" }, " \n",
+							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbookVM2and3" }, " --chef-license accept\n"	
+						]]
+                    }
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "Ec2IamProfileEC2"
+                },
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+				"NetworkInterfaces": [
+                    {
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "AssociatePublicIpAddress": true,
+                        "GroupSet": [
+                            {
+                                "Ref": "SecurityGroupEC2"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "ServiceSubnet1"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "DemoserviceVM2"
+                    }
+                ]
+            }
+        },
+		"DemoserviceVM3": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "UserData": {
+                    "Fn::Base64": {
+						"Fn::Join": ["", [
+							"#!/bin/bash\n",
+							"sudo su ec2-user\n",
+							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
+							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
+							"mkdir -p /home/ec2-user/.chef\n",
+							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
+							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
+							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
+							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
+							"knife cookbook download ", { "Ref": "DemoServiceCookbookVM2and3" }, " latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
+							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "\n",
+							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
+							"sudo su root \n",
+							"export DemoServiceartifacturl1=", { "Ref": "DemoServiceVM3ArtifactUrl1" }, " \n",
+							"export DemoServiceartifactfilename1=", { "Ref": "DemoServiceVM3ArtifactFileName1" }, " \n",
+							"export DemoServiceartifacturl2=", { "Ref": "DemoServiceVM3ArtifactUrl2" }, " \n",
+							"export DemoServiceartifactfilename2=", { "Ref": "DemoServiceVM3ArtifactFileName2" }, " \n",
+							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbookVM2and3" }, " --chef-license accept\n"
+						]]
+                    }
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "Ec2IamProfileEC2"
+                },
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+				"NetworkInterfaces": [
+                    {
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "AssociatePublicIpAddress": true,
+                        "GroupSet": [
+                            {
+                                "Ref": "SecurityGroupEC2"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "ServiceSubnet1"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "DemoserviceVM3"
+                    }
+                ]
+            }
+        },
+        "DemoMQ": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "UserData": {
+                    "Fn::Base64": {
+						"Fn::Join": ["", [
+							"#!/bin/bash\n",
+							"sudo su ec2-user\n",
+							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
+							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
+							"mkdir -p /home/ec2-user/.chef\n",
+							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
+							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
+							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
+							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
+							"sudo knife cookbook download ", { "Ref": "DemoMQCookbook" }, " latest -d /home/ec2-user/cookbooks\n",
+							"sudo knife cookbook download java_se latest -d /home/ec2-user/cookbooks\n",
+							"sudo mv /home/ec2-user/cookbooks/", { "Ref": "DemoMQCookbook" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoMQCookbook" }, "\n",
+							"sudo mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
+							"sudo chown -R ec2-user:ec2-user /home/ec2-user/\n",
+                        	"sudo chef-client --local-mode -l debug -r ", { "Ref": "DemoMQCookbook" }, " --chef-license accept\n",
+							"sudo /opt/apache-activemq-5.15.12/bin/activemq start"
+						]]
+                    }
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "Ec2IamProfileEC2"
+                },
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+                
+				"NetworkInterfaces": [
+                    {
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+						"PrivateIpAddress": { "Ref": "MQServerPrivateIP" },
+                        "AssociatePublicIpAddress": true,
+                        "GroupSet": [
+                            {
+                                "Ref": "SecurityGroupMQ"
+                            }
+                        ],
+                        "SubnetId": {
+                            "Ref": "ServiceSubnet1"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "DemoMQ"
+                    }
+                ]
+            }
+        },
+        "EC2IamRole1": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "Ec2-role1",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/"
+            }
+        },
+        "RolePolicies": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "barclay-poc-instance",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "GeneralAccess",
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:*",
+                                "ec2:*",
+                                "ssm:*",
+                                "cloudformation:*"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "EC2IamRole1"
+                    }
+                ]
+            }
+        },
+        "Ec2IamProfileEC2": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Roles": [
+                    {
+                        "Ref": "EC2IamRole1"
+                    }
+                ]
+            }
+        },
+        "SecurityGroupEC2": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "security group",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "ProjectTag"
+                        }
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "8000",
+                        "ToPort": "8090",
+						"CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+					},
+					{
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "8090",
+                        "SourceSecurityGroupId": {
+                            "Ref": "WebLBSG"
+                        }
+					} 
+                ]
+            }
+        },
+		
+		"SecurityGroupMQ": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "security group",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "ProjectTag"
+                        }
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "61616",
+                        "ToPort": "61616",
+						"CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    },
+					{
+                        "IpProtocol": "tcp",
+                        "FromPort": "8161",
+                        "ToPort": "8161",
+						"CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    }
+                ]
+            }
+        },
+		
+       "WebLBSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "security group",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "ProjectTag"
+                        }
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "8000",
+                        "ToPort": "8090",
+                        "CidrIp": {
+                            "Ref": "VpcCidr"
+                        }
+                    }
+                ]
+            }
+        },
+	  "DemoWebLB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "CrossZone": true,
+        "Listeners": [
+          {
+            "InstancePort": { "Ref": "WebInstancePort" },
+            "InstanceProtocol": "HTTP",
+            "LoadBalancerPort": { "Ref": "WebLBPort" },
+            "Protocol": "HTTP"
+          }
+        ],
+		"HealthCheck": {
+			"HealthyThreshold" : 2,
+			"Interval" : 300,
+			"Target" : "HTTP:8080/angular/index.html",
+			"Timeout" : 60,
+			"UnhealthyThreshold" : 5
+		},
+        "LoadBalancerName": "DemoWebLB",
+        "Scheme": "internal",
+        "Subnets": [
+                    {
+                        "Ref": "WebSubnet"
+                    }
+                ],
+        "SecurityGroups": [
+                    {
+                        "Ref": "WebLBSG"
+                    }
+                ],
+        "Instances": [
+                    {
+                        "Ref": "DemowebVM1"
+                    },
+					{
+                        "Ref": "DemowebVM2"
+                    }
+                ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DemoWebLB"
+          }
+        ]
+      }
+    },
+	  "ServiceLBSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "security group",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "ProjectTag"
+                        }
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "SourceSecurityGroupId": {
+                            "Ref": "WebLBSG"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "8000",
+                        "ToPort": "8090",
+						"SourceSecurityGroupId": {
+                            "Ref": "WebLBSG"
+                        }
+					},
+					{
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "SourceSecurityGroupId": {
+                            "Ref": "WebLBSG"
+                        }
+					},
+					{
+                        "IpProtocol": "tcp",
+                        "FromPort": "0",
+                        "ToPort": "65535",
+						"CidrIp": {
+                            "Ref": "OnPremServiceCIDR"
+                        }
+					} 
+                ]
+            }
+        },
+		    "DemoServiceAppLB": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "Name": "DemoServiceAppLB",
+                "Scheme": "internal",
+                "LoadBalancerAttributes": [
+                    {
+                        "Key": "idle_timeout.timeout_seconds",
+                        "Value": "30"
+                    }
+                ],
+                "Subnets": [
+                    {
+                        "Ref": "ServiceSubnet1"
+                    },
+                    {
+                        "Ref": "ServiceSubnet2"
+                    }
+                ],
+                "SecurityGroups": [
+                    {
+                        "Ref": "ServiceLBSG"
+                    }
+                ]
+            }
+        },
+        "DemoServiceLBListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "DependsOn": "DemoServiceAppLB",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "ServiceLBTG1"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "DemoServiceAppLB"
+                },
+                "Port": { "Ref": "ServiceLBPort" },
+                "Protocol": "HTTP"
+            }
+        },
+	"ServiceLBListenerRule1": {
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+      "Properties": {
+        "Actions": [{
+          "Type": "forward",
+          "TargetGroupArn": { "Ref": "ServiceLBTG1" }
+        }],
+        "Conditions": [{
+          "Field": "path-pattern",
+          "Values": { "Ref": "ServiceLBPathPattern1" }
+        }],
+        "ListenerArn": { "Ref": "DemoServiceLBListener" },
+        "Priority": 1
+      }
+    },
+	"ServiceLBListenerRule2": {
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+      "Properties": {
+        "Actions": [{
+          "Type": "forward",
+          "TargetGroupArn": { "Ref": "ServiceLBTG2" }
+        }],
+        "Conditions": [{
+          "Field": "path-pattern",
+          "Values": { "Ref": "ServiceLBPathPattern2" }
+        }],
+        "ListenerArn": { "Ref": "DemoServiceLBListener" },
+        "Priority": 2
+      }
+    },
+	"ServiceLBListenerRule3": {
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+      "Properties": {
+        "Actions": [{
+          "Type": "forward",
+          "TargetGroupArn": { "Ref": "ServiceLBTG3" }
+        }],
+        "Conditions": [{
+          "Field": "path-pattern",
+          "Values": { "Ref": "ServiceLBPathPattern3" }
+        }],
+        "ListenerArn": { "Ref": "DemoServiceLBListener" },
+        "Priority": 3
+      }
+    },
+		"ServiceLBTG1": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "DependsOn": "DemoServiceAppLB",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "Targets": [
+                    {
+                        "Id": {
+                            "Ref": "DemoserviceVM1"
+                        }
+                    }
+                ],
+                "Port": { "Ref": "ServiceLBTG1Port" },
+                "Protocol": "HTTP",
+                "Matcher": {
+                    "HttpCode": "200-299"
+                },
+                "HealthCheckIntervalSeconds": 300,
+                "HealthCheckProtocol": "HTTP",
+                "HealthCheckPath": "/",
+                "HealthCheckTimeoutSeconds": 50,
+                "HealthyThresholdCount": 2,
+                "UnhealthyThresholdCount": 5,
+                "Name": "ServiceLBTG1",
+                "TargetGroupAttributes": [
+                    {
+                        "Key": "deregistration_delay.timeout_seconds",
+                        "Value": "60"
+                    }
+                ]
+            }
+        },
+		"ServiceLBTG2": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "DependsOn": "DemoServiceAppLB",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "Targets": [
+                    {
+                        "Id": {
+                            "Ref": "DemoserviceVM2"
+                        }
+                    }
+                ],
+                "Port": { "Ref": "ServiceLBTG2Port" },
+                "Protocol": "HTTP",
+                "Matcher": {
+                    "HttpCode": "200-299"
+                },
+                "HealthCheckIntervalSeconds": 300,
+                "HealthCheckProtocol": "HTTP",
+                "HealthCheckPath": "/",
+                "HealthCheckTimeoutSeconds": 50,
+                "HealthyThresholdCount": 2,
+                "UnhealthyThresholdCount": 5,
+                "Name": "ServiceLBTG2",
+                "TargetGroupAttributes": [
+                    {
+                        "Key": "deregistration_delay.timeout_seconds",
+                        "Value": "60"
+                    }
+                ]
+            }
+        },
+		"ServiceLBTG3": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "DependsOn": "DemoServiceAppLB",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VpcId"
+                },
+                "Targets": [
+                    {
+                        "Id": {
+                            "Ref": "DemoserviceVM3"
+                        }
+                    }
+                ],
+                "Port": { "Ref": "ServiceLBTG3Port" },
+                "Protocol": "HTTP",
+                "Matcher": {
+                    "HttpCode": "200-299"
+                },
+                "HealthCheckIntervalSeconds": 300,
+                "HealthCheckProtocol": "HTTP",
+                "HealthCheckPath": "/",
+                "HealthCheckTimeoutSeconds": 50,
+                "HealthyThresholdCount": 2,
+                "UnhealthyThresholdCount": 5,
+                "Name": "ServiceLBTG3",
+                "TargetGroupAttributes": [
+                    {
+                        "Key": "deregistration_delay.timeout_seconds",
+                        "Value": "60"
+                    }
+                ]
+            }
+        }
+		
+  }
+}
