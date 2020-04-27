@@ -354,7 +354,7 @@
         "RolePolicies": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
-                "PolicyName": "barclay-poc-instance",
+                "PolicyName": "samplePolicy",
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
