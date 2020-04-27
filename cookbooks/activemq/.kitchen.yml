@@ -1,0 +1,40 @@
+driver:
+  name: ec2
+  instance_type: t2.small
+  region: us-east-2
+  retryable_sleep: 30
+  retryable_tries: 600
+  subnet_id: subnet-96f3b9fe
+  tags:
+    Name: Barclays_poc
+    az:terminate: 'true'
+    az:kitchen: 'true'
+    Owner: newtglobal
+provisioner:
+  name: chef_zero
+  client_rb:
+    ssl_verify_mode: ":verify_none"
+    log_level: ":debug"
+    verify_api_cert: false
+  install_strategy: always
+  max_retries: 5
+  product_name: chef
+  product_version: 14
+  retry_on_exit_code:
+    - 35  # rebooting
+platforms:
+- name: rhel7-ec2
+  driver:
+    image_search:
+      name: RHEL-8.0.0_HVM-20190618-x86_64-1-Hourly2-GP2
+  transport:
+    username: ec2-user
+    max_ssh_sessions: 6
+suites:
+  - name: default
+transport:
+  username: ec2-user
+  max_ssh_sessions: 6
+verifier:
+  name: inspec
+

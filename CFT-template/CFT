@@ -53,12 +53,13 @@
         },
         "S3BucketUri": {
             "Type": "String",
-			"Description": "S3 bucket URi where chef server's starter kit is placed",
+			"Description": "S3 bucket URi where chef server's starter kit is placed. starter-kit is something that is received when setting up Chef Enterprise server using official AMI for Chef on AWS marketplace. The zip file contains knife.rb, pivotal.rb and validator/client PEM file for connectivity to Chef server",
             "Default": ""
         },
         "ChefValidationKitFile": {
             "Type": "String",
-            "Default": "starter-kit.zip"
+            "Description": "File name of the start-kit zip. starter-kit is something that is received when setting up Chef Enterprise server using official AMI for Chef on AWS marketplace. The zip file contains knife.rb, pivotal.rb and validator/client PEM file for connectivity to Chef server",
+			"Default": "starter-kit.zip"
         },
 		"MQServerPrivateIP":{
             "Type": "String",
@@ -85,61 +86,17 @@
 			"Description": "Name of the file to be downloaded from Nexus",
             "Default": "sample.war"
         },
-		"DemoServiceVM2ArtifactUrl1": {
-            "Type": "String",
-			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
-            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
-        },
-		"DemoServiceVM2ArtifactFileName1": {
-            "Type": "String",
-            "Description": "Name of the file to be downloaded from Nexus",
-            "Default": "sample.war"
-        },
-		"DemoServiceVM2ArtifactUrl2": {
-            "Type": "String",
-			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
-            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
-        },
-		"DemoServiceVM2ArtifactFileName2": {
-            "Type": "String",
-			"Description": "Name of the file to be downloaded from Nexus",
-            "Default": "BarcaSave.war"
-        },
-		"DemoServiceVM3ArtifactUrl1": {
-            "Type": "String",
-			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
-            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
-        },
-		"DemoServiceVM3ArtifactFileName1": {
-            "Type": "String",
-			"Description": "Name of the file to be downloaded from Nexus",
-            "Default": "sample.war"
-        },
-		"DemoServiceVM3ArtifactUrl2": {
-            "Type": "String",
-			"Description": "Nexus/other repo path for Java WAR path. The default URL does not work",
-            "Default": "http://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war"
-        },
-		"DemoServiceVM3ArtifactFileName2": {
-            "Type": "String",
-			"Description": "Name of the file to be downloaded from Nexus",
-            "Default": "sample.war"
-        },
 		"DemoWebCookbook": {
             "Type": "String",
-            "Default": "web_cookbook"
+            "Default": "web_app"
         },
-		"DemoServiceCookbookVM1": {
+		"DemoServiceCookbook": {
             "Type": "String",
-            "Default": "service_cookbook_VM1"
-        },
-		"DemoServiceCookbookVM2and3": {
-            "Type": "String",
-            "Default": "service_cookbook_VM2and3"
+            "Default": "service_app"
         },
 		"DemoMQCookbook": {
             "Type": "String",
-            "Default": "activemq_cookbook"
+            "Default": "activemq"
         },
 		"WebInstancePort": {
             "Type": "Number",
@@ -154,14 +111,6 @@
             "Default": "80"
         },
 		"ServiceLBTG1Port": {
-            "Type": "Number",
-            "Default": "80"
-        },
-		"ServiceLBTG2Port": {
-            "Type": "Number",
-            "Default": "80"
-        },
-		"ServiceLBTG3Port": {
             "Type": "Number",
             "Default": "80"
         },
@@ -203,14 +152,16 @@
 							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
 							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
 							"knife cookbook download ", { "Ref": "DemoWebCookbook" }, " latest -d /home/ec2-user/cookbooks\n",
-							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download tomcat latest -d /home/ec2-user/cookbooks\n",
 							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "\n",
 							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
 							"sudo su root  \n",
 							"export DemoWebartifacturl=", { "Ref": "DemoWebArtifactUrl" }, " \n",
 							"sed -i 's/artifactFileName/", { "Ref": "DemoWebArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "/attributes/default.rb \n",
 							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
-                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoWebCookbook" }, " --chef-license accept\n"
+							"chef-client --local-mode -r tomcat --chef-license accept\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoWebCookbook" }, " \n"
 						]]
                     }
                 },
@@ -249,68 +200,7 @@
                 ]
             }
         },
-        "DemowebVM2": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-                "UserData": {
-                    "Fn::Base64": {
-						"Fn::Join": ["", [
-							"#!/bin/bash\n",
-							"sudo su ec2-user\n",
-							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
-							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
-							"mkdir -p /home/ec2-user/.chef\n",
-							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
-							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
-							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
-							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
-							"knife cookbook download ", { "Ref": "DemoWebCookbook" }, " latest -d /home/ec2-user/cookbooks\n",
-							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
-							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "\n",
-							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
-							"sudo su root \n",
-							"export DemoWebartifacturl=", { "Ref": "DemoWebArtifactUrl" }, " \n",
-							"sed -i 's/artifactFileName/", { "Ref": "DemoWebArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoWebCookbook" }, "/attributes/default.rb \n",
-							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
-                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoWebCookbook" }, " --chef-license accept\n"
-						]]
-                    }
-                },
-                "InstanceType": {
-                    "Ref": "InstanceType"
-                },
-                "KeyName": {
-                    "Ref": "KeyName"
-                },
-                "IamInstanceProfile": {
-                    "Ref": "Ec2IamProfileEC2"
-                },
-                "ImageId": {
-                    "Ref": "ImageId"
-                },
-				"NetworkInterfaces": [
-                    {
-                        "DeleteOnTermination": true,
-                        "DeviceIndex": 0,
-                        "AssociatePublicIpAddress": true,
-                        "GroupSet": [
-                            {
-                                "Ref": "SecurityGroupEC2"
-                            }
-                        ],
-                        "SubnetId": {
-                            "Ref": "WebSubnet"
-                        }
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": "DemowebVM2"
-                    }
-                ]
-            }
-        },
+        
         "DemoserviceVM1": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
@@ -326,15 +216,17 @@
 							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
 							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
 							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
-							"knife cookbook download ", { "Ref": "DemoServiceCookbookVM1" }, " latest -d /home/ec2-user/cookbooks\n",
-							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
-							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM1" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM1" }, "\n",
+							"knife cookbook download ", { "Ref": "DemoServiceCookbook" }, " latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download java_se latest -d /home/ec2-user/cookbooks\n",
+							"knife cookbook download tomcat latest -d /home/ec2-user/cookbooks\n",
+							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbook" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbook" }, "\n",
 							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
 							"sudo su root \n",
 							"export DemoServiceartifacturl=", { "Ref": "DemoServiceVM1ArtifactUrl" }, " \n",
-							"sed -i 's/artifact_file_name/", { "Ref": "DemoServiceVM1ArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM1" }, "/attributes/default.rb \n",
+							"sed -i 's/artifact_file_name/", { "Ref": "DemoServiceVM1ArtifactFileName" }, "/g' /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbook" }, "/attributes/default.rb \n",
 							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
-                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbookVM1" }, " --chef-license accept\n"							
+							"chef-client --local-mode -r tomcat --chef-license accept\n",
+                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbook" }, " \n"							
 						]]
                     }
                 },
@@ -373,134 +265,7 @@
                 ]
             }
         },
-        "DemoserviceVM2": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-                "UserData": {
-                    "Fn::Base64": {
-						"Fn::Join": ["", [
-							"#!/bin/bash\n",
-							"sudo su ec2-user\n",
-							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
-							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
-							"mkdir -p /home/ec2-user/.chef\n",
-							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
-							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
-							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
-							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
-							"knife cookbook download ", { "Ref": "DemoServiceCookbookVM2and3" }, " latest -d /home/ec2-user/cookbooks\n",
-							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
-							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "\n",
-							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
-							"sudo su root \n",
-							"export DemoServiceartifacturl1=", { "Ref": "DemoServiceVM2ArtifactUrl1" }, " \n",
-							"export DemoServiceartifactfilename1=", { "Ref": "DemoServiceVM2ArtifactFileName1" }, " \n",
-							"export DemoServiceartifacturl2=", { "Ref": "DemoServiceVM2ArtifactUrl2" }, " \n",
-							"export DemoServiceartifactfilename2=", { "Ref": "DemoServiceVM2ArtifactFileName2" }, " \n",
-							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
-                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbookVM2and3" }, " --chef-license accept\n"	
-						]]
-                    }
-                },
-                "InstanceType": {
-                    "Ref": "InstanceType"
-                },
-                "KeyName": {
-                    "Ref": "KeyName"
-                },
-                "IamInstanceProfile": {
-                    "Ref": "Ec2IamProfileEC2"
-                },
-                "ImageId": {
-                    "Ref": "ImageId"
-                },
-				"NetworkInterfaces": [
-                    {
-                        "DeleteOnTermination": true,
-                        "DeviceIndex": 0,
-                        "AssociatePublicIpAddress": true,
-                        "GroupSet": [
-                            {
-                                "Ref": "SecurityGroupEC2"
-                            }
-                        ],
-                        "SubnetId": {
-                            "Ref": "ServiceSubnet1"
-                        }
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": "DemoserviceVM2"
-                    }
-                ]
-            }
-        },
-		"DemoserviceVM3": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-                "UserData": {
-                    "Fn::Base64": {
-						"Fn::Join": ["", [
-							"#!/bin/bash\n",
-							"sudo su ec2-user\n",
-							"sudo yum install -y unzip curl\ncd /home/ec2-user/\n",
-							"curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\" && unzip awscliv2.zip && sudo ./aws/install\n",
-							"mkdir -p /home/ec2-user/.chef\n",
-							"/usr/local/bin/aws s3 cp ", { "Ref": "S3BucketUri" }, "/", { "Ref": "ChefValidationKitFile" }, " /home/ec2-user/.chef\n",
-							"cd /home/ec2-user/.chef && unzip ", { "Ref": "ChefValidationKitFile" }, " \n",
-							"cp -r chef-repo/.chef/* /home/ec2-user/.chef\n",
-							"sudo yum install -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm\n",
-							"knife cookbook download ", { "Ref": "DemoServiceCookbookVM2and3" }, " latest -d /home/ec2-user/cookbooks\n",
-							"knife cookbook download java_se -d /home/ec2-user/cookbooks\n",
-							"mv /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "* /home/ec2-user/cookbooks/", { "Ref": "DemoServiceCookbookVM2and3" }, "\n",
-							"mv /home/ec2-user/cookbooks/java_se* /home/ec2-user/cookbooks/java_se\n",
-							"sudo su root \n",
-							"export DemoServiceartifacturl1=", { "Ref": "DemoServiceVM3ArtifactUrl1" }, " \n",
-							"export DemoServiceartifactfilename1=", { "Ref": "DemoServiceVM3ArtifactFileName1" }, " \n",
-							"export DemoServiceartifacturl2=", { "Ref": "DemoServiceVM3ArtifactUrl2" }, " \n",
-							"export DemoServiceartifactfilename2=", { "Ref": "DemoServiceVM3ArtifactFileName2" }, " \n",
-							"chown -R ec2-user:ec2-user /home/ec2-user/\n",
-                        	"chef-client --local-mode -l debug -r ", { "Ref": "DemoServiceCookbookVM2and3" }, " --chef-license accept\n"
-						]]
-                    }
-                },
-                "InstanceType": {
-                    "Ref": "InstanceType"
-                },
-                "KeyName": {
-                    "Ref": "KeyName"
-                },
-                "IamInstanceProfile": {
-                    "Ref": "Ec2IamProfileEC2"
-                },
-                "ImageId": {
-                    "Ref": "ImageId"
-                },
-				"NetworkInterfaces": [
-                    {
-                        "DeleteOnTermination": true,
-                        "DeviceIndex": 0,
-                        "AssociatePublicIpAddress": true,
-                        "GroupSet": [
-                            {
-                                "Ref": "SecurityGroupEC2"
-                            }
-                        ],
-                        "SubnetId": {
-                            "Ref": "ServiceSubnet1"
-                        }
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": "DemoserviceVM3"
-                    }
-                ]
-            }
-        },
+        
         "DemoMQ": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
@@ -788,9 +553,6 @@
         "Instances": [
                     {
                         "Ref": "DemowebVM1"
-                    },
-					{
-                        "Ref": "DemowebVM2"
                     }
                 ],
         "Tags": [
@@ -917,7 +679,7 @@
       "Properties": {
         "Actions": [{
           "Type": "forward",
-          "TargetGroupArn": { "Ref": "ServiceLBTG2" }
+          "TargetGroupArn": { "Ref": "ServiceLBTG1" }
         }],
         "Conditions": [{
           "Field": "path-pattern",
@@ -932,7 +694,7 @@
       "Properties": {
         "Actions": [{
           "Type": "forward",
-          "TargetGroupArn": { "Ref": "ServiceLBTG3" }
+          "TargetGroupArn": { "Ref": "ServiceLBTG1" }
         }],
         "Conditions": [{
           "Field": "path-pattern",
@@ -968,74 +730,6 @@
                 "HealthyThresholdCount": 2,
                 "UnhealthyThresholdCount": 5,
                 "Name": "ServiceLBTG1",
-                "TargetGroupAttributes": [
-                    {
-                        "Key": "deregistration_delay.timeout_seconds",
-                        "Value": "60"
-                    }
-                ]
-            }
-        },
-		"ServiceLBTG2": {
-            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-            "DependsOn": "DemoServiceAppLB",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VpcId"
-                },
-                "Targets": [
-                    {
-                        "Id": {
-                            "Ref": "DemoserviceVM2"
-                        }
-                    }
-                ],
-                "Port": { "Ref": "ServiceLBTG2Port" },
-                "Protocol": "HTTP",
-                "Matcher": {
-                    "HttpCode": "200-299"
-                },
-                "HealthCheckIntervalSeconds": 300,
-                "HealthCheckProtocol": "HTTP",
-                "HealthCheckPath": "/",
-                "HealthCheckTimeoutSeconds": 50,
-                "HealthyThresholdCount": 2,
-                "UnhealthyThresholdCount": 5,
-                "Name": "ServiceLBTG2",
-                "TargetGroupAttributes": [
-                    {
-                        "Key": "deregistration_delay.timeout_seconds",
-                        "Value": "60"
-                    }
-                ]
-            }
-        },
-		"ServiceLBTG3": {
-            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-            "DependsOn": "DemoServiceAppLB",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VpcId"
-                },
-                "Targets": [
-                    {
-                        "Id": {
-                            "Ref": "DemoserviceVM3"
-                        }
-                    }
-                ],
-                "Port": { "Ref": "ServiceLBTG3Port" },
-                "Protocol": "HTTP",
-                "Matcher": {
-                    "HttpCode": "200-299"
-                },
-                "HealthCheckIntervalSeconds": 300,
-                "HealthCheckProtocol": "HTTP",
-                "HealthCheckPath": "/",
-                "HealthCheckTimeoutSeconds": 50,
-                "HealthyThresholdCount": 2,
-                "UnhealthyThresholdCount": 5,
-                "Name": "ServiceLBTG3",
                 "TargetGroupAttributes": [
                     {
                         "Key": "deregistration_delay.timeout_seconds",
