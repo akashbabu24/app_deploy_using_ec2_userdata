@@ -1,4 +1,5 @@
-# Java SE Cookbook
+# This cookbook is a public cookbook and the owner of this repository/account does not hold any ownership over it. It is just added as a dependency here temporarily. Details of the cookbook below as give by the authors.
+Java SE Cookbook
 
 [![Cookbook Version](http://img.shields.io/cookbook/v/java_se.svg?style=flat-square)][cookbook]
 [![linux](http://img.shields.io/travis/dhoer/chef-java_se/master.svg?label=linux&style=flat-square)][linux]
