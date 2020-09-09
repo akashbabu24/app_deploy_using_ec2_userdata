@@ -1,0 +1,5 @@
+check process haproxy with pidfile "/var/run/haproxy.pid"
+  group haproxy
+  start program = "/usr/bin/env service haproxy start"
+  stop program = "/usr/bin/env service haproxy stop"
+  if failed url <%= @stats_url %> with timeout 1 seconds for 2 cycles then restart

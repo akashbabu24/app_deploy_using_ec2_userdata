@@ -1,0 +1,54 @@
+global
+        log 127.0.0.1   local0
+        log 127.0.0.1   local1 notice
+        #log loghost    local0 info
+        maxconn 4096
+        #debug
+        #quiet
+        user haproxy
+        group haproxy
+
+defaults
+        log     global
+        mode    http
+        option  httplog
+        option  dontlognull
+        retries 3
+        option redispatch
+        maxconn 2000
+        contimeout      5000
+        clitimeout      50000
+        srvtimeout      50000
+        <% if node["haproxy"]["x_forwarded_for"] -%>
+        option httpclose
+        option forwardfor
+        <% end -%>
+        
+# Set up application listeners here.
+listen application 
+  bind 0.0.0.0:<%= node["haproxy"]["incoming_port"] %>
+  balance <%= node["haproxy"]["balance_algorithm"] %>
+  mode http
+  <% @pool_members.each do |member| -%>
+  server <%= member[:name] %> <%= member[:ipaddress] %>:<%= node["haproxy"]["member_port"] %> weight 1 maxconn <%= node["haproxy"]["member_max_connections"] %> check
+  <% end -%>
+
+<% if node["haproxy"]["enable_ssl"] -%>
+listen ssl_application 
+  bind 0.0.0.0:<%= node["haproxy"]["ssl_incoming_port"] %> ssl crt /etc/ssl/private/haproxy.pem
+  balance <%= node["haproxy"]["balance_algorithm"] %>
+  mode http
+  <% @pool_members.each do |member| -%>
+  server <%= member[:name] %> <%= member[:ipaddress] %>:<%= node["haproxy"]["ssl_member_port"] %> ssl weight 1 maxconn <%= node["haproxy"]["member_max_connections"] %> check
+  <% end -%>
+  option httpchk GET <%= node["haproxy"]["check_uri"] %> HTTP/1.1\r\nHost:\ myhost\r\nUser-Agent:\ <%= node.name %>
+<% end -%>
+<% if node["haproxy"]["enable_admin"] -%>
+  stats enable
+  stats show-desc <%= node.name %>
+  stats uri <%= node["haproxy"]["stats_url"] %>
+  stats refresh 10s
+  stats realm Haproxy\ Statistics
+  stats auth <%= node["haproxy"]["stats_user"] %>:<%= node["haproxy"]["stats_password"] %>
+  monitor-uri <%= node["haproxy"]["monitor_url"] %>
+<% end -%>
