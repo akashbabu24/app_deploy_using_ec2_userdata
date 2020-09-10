@@ -30,17 +30,9 @@ default['haproxy']['check_uri'] = "/"
 default['haproxy']['alt_port_check'] = false
 default['haproxy']['alt_port'] = "80"
 default['haproxy']['enable_admin'] = false       #make it true if monit and stats needed and update the below attributes
-#default['haproxy']['stats_url'] = "/i_am_hard_to_guess"
+#default['haproxy']['stats_url'] = "/"
 #default['haproxy']['stats_user'] = "insecure_user"
 #default['haproxy']['stats_password'] = "insecure_password"
-#default['haproxy']['monitor_url'] = "/hard_to_guess_too"
-
-default['haproxy']['source']['enabled'] = false
-default['haproxy']['source']['version_branch'] = '1.5'
-default['haproxy']['source']['version'] = '1.5-dev17'
-default['haproxy']['source']['user'] = 'root'
-default['haproxy']['source']['install_prefix_root'] = '/usr/local'
+#default['haproxy']['monitor_url'] = "/"
 
 default['haproxy']['monit']['stats_url'] = 'http://127.0.0.1:22002'
-
-

@@ -17,11 +17,7 @@
 # limitations under the License.
 #
 
-if node['haproxy']['source']['enabled']
-  include_recipe "haproxy::install_from_source"
-else
-  include_recipe "haproxy::install_from_package"
-end
+include_recipe "haproxy::install_from_package"
 
 directory "/etc/firewalld/services" do
   owner "root"
