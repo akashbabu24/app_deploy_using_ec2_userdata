@@ -10,15 +10,16 @@ script "Download agent zip from s3" do
         EOH
 end
 
-execute 'extract_zip' do
+
+execute 'make dir /opt/appagent' do
   command 'mkdir /opt/appagent'
-  not_if { File.exists?("/opt/appagent/appagent.jar") }
+  not_if { File.exists?("/opt/appagent/javaagent.jar") }
 end
 
 execute 'extract_zip' do
   command 'unzip /tmp/appagent.zip -d /opt/appagent'
   cwd '/opt/appagent'
-  not_if { File.exists?("/opt/appagent/appagent.jar") }
+  not_if { File.exists?("/opt/appagent/javaagent.jar") }
 end
 
 template "/opt/appagent/conf/controller-info.xml" do

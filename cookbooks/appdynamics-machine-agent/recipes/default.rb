@@ -10,7 +10,7 @@ script "Download agent zip from s3" do
         EOH
 end
 
-execute 'extract_zip' do
+execute 'mkdir machineagent dir' do
   command 'mkdir /opt/machineagent'
   not_if { File.exists?("/opt/machineagent/machineagent.jar") }
 end
