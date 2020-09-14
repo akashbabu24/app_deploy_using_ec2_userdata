@@ -21,8 +21,11 @@ link '/usr/bin/python' do
   to '/usr/bin/python3'
 end
 
-execute "Copy customerCA.crt" do
-  command "cp -r /home/ec2-user/customerCA.crt  /opt/cloudhsm/etc/customerCA.crt"
+template "/opt/cloudhsm/etc/customerCA.crt" do
+   source "customerCA.crt.erb"
+   owner "root"
+   group "root"
+   mode 0644
 end
 
 execute "Update configuration files for CloudHSM Client" do
