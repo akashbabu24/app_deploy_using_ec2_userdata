@@ -1,0 +1,35 @@
+{
+  "name": "appdynamics-machine-agent",
+  "description": "Installs/Configures appdynamics-machine-agent",
+  "long_description": "",
+  "maintainer": "The Authors",
+  "maintainer_email": "you@example.com",
+  "license": "All Rights Reserved",
+  "platforms": {
+
+  },
+  "dependencies": {
+
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.1.4",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 14.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

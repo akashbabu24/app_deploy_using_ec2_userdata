@@ -1,0 +1,36 @@
+{
+  "name": "appdynamics-java-agent",
+  "description": "Installs/Configures appdynamics java agent",
+  "long_description": "",
+  "maintainer": "The Authors",
+  "maintainer_email": "you@example.com",
+  "license": "All Rights Reserved",
+  "platforms": {
+
+  },
+  "dependencies": {
+    "java_se": "= 8.131.0",
+    "tomcat": "> 0.1.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.1.4",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 14.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}
