@@ -22,11 +22,6 @@ execute 'extract_zip' do
 end
 
 
-#archive_file '#{node['AppDynamics']['machine_agent_source_file']}' do
- # source node['AppDynamics']['machine_agent_source_dir']
-  #path node['AppDynamics']['machine_agent_install_dir']
-#end
-
 template "/opt/machineagent/conf/controller-info.xml" do
   source "controller-info.xml.erb"
   owner "root"
@@ -41,6 +36,26 @@ template "/opt/machineagent/monitors/analytics-agent/conf/analytics-agent.proper
   mode 0755
 end
 
-execute "machine-agent" do
-  command "/opt/machineagent/bin/machine-agent -d -p /opt/machineagent/pidfile"
+
+#remote_file "Copy service file" do 
+ # path "/etc/systemd/system/appdynamics-machine-agent.service" 
+  #source "file:///opt/machineagent/etc/systemd/system/appdynamics-machine-agent.service"
+  #owner 'root'
+  #group 'root'
+  #mode 0755
+#end
+
+template "/etc/systemd/system/appd-machine-agent.service" do
+  source "appd-machine.service.erb"
+  owner "root"
+  group "root"
+  mode 0755
 end
+
+service "appd-machine-agent" do
+  action [:enable, :start]
+end
+
+#execute "machine-agent" do
+  #command "/opt/machineagent/bin/machine-agent -d -p /opt/machineagent/pidfile"
+#end

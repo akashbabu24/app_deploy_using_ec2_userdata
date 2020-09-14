@@ -13,5 +13,5 @@ default['AppDynamics']['machine_agent_source_url'] = 's3://barclaychefkit/machin
 #default['AppDynamics']['machine_agent_install_dir'] = '/opt/machineagent'
 #default['AppDynamics']['machine_agent_source_dir'] = '/tmp'
 
-default['AppDynamics']['controller_url'] = 'http://bear202009070342415.saas.appdynamics.com:9080'
+default['AppDynamics']['controller_url'] = 'https://bear202009070342415.saas.appdynamics.com:443'
 default['AppDynamics']['http_event_endpoint'] = 'http://bear202009070342415.saas.appdynamics.com:9080'
