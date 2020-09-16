@@ -99,9 +99,9 @@ http.event.error.maxPauseMillis=300000
 # The customer name field from the appdynamics license page.
 http.event.name=customer1
 # The global name account in the Controller to which this Analytics data is associated.
-http.event.accountName=bear202009070342415_d819f8ba-6b7b-49cb-bb51-62d57afb5100
+http.event.accountName=<%= node['AppDynamics']['account_name'] %>
 # Replace this value with the access key of the account name configured above.
-http.event.accessKey=el1s8nvusg6n
+http.event.accessKey=<%= node['AppDynamics']['account_access_key'] %>
 # Replace this value to true if authentication for incoming BTs is needed.
 inbound.bt.authenticate=false
 
